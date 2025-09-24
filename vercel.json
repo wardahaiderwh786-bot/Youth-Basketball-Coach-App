@@ -1,0 +1,5 @@
+{
+  "routes": [
+    { "src": "/", "dest": "/Youth Basketball Coach App.html" }
+  ]
+}

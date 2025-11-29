@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OneQR — Proposal: Cross-Border Universal QR Payment Network</title>
+<meta name="description" content="Production-ready single-file proposal landing page — OneQR. Native-grade, bank-grade QR payments, routing, KYC, FX & reconciliation." />
+<style>
+/* ========== CSS VARIABLE MAP (export-ready: edit here) ========== */
+:root{
+  --bg-1: linear-gradient(135deg,#14142b 0%, #1f1b45 40%, #2e2a6a 100%);
+  --primary-grad: linear-gradient(90deg,#5b6bff,#7b4dff); /* purplish-blue gradient */
+  --accent-grad: linear-gradient(90deg,#c5f06a,#8fe34b); /* greenish-yellow */
+  --highlight-grad: linear-gradient(90deg,#ff6a3d,#ff2d6a); /* orange-red gradient */
+  --muted: #c7c9d9;
+  --card-bg: rgba(255,255,255,0.03);
+  --glass: rgba(255,255,255,0.04);
+  --glass-2: rgba(255,255,255,0.02);
+  --accent-color: #9cf14b;
+  --text: #e9eef8;
+  --brand-logo-url: "logo-placeholder.svg"; /* REPLACE this with path or data-uri of attached logo */
+  --watermark-opacity: 0.03;
+  --glass-border: rgba(255,255,255,0.06);
+  --success: #5ee3a0;
+  --danger: #ff7b88;
+  --shadow: 0 8px 30px rgba(2,6,23,0.6);
+  --radius: 12px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+  --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* ========== Base ========== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--text);
+  background: var(--bg-1);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+  overflow-x:hidden;
+}
+
+/* Watermark background using logo */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  background-image: url(var(--brand-logo-url));
+  background-repeat: repeat;
+  background-size: 24vmin;
+  opacity: var(--watermark-opacity);
+  mix-blend-mode: screen;
+  pointer-events:none;
+  z-index:0;
+  filter: blur(0.2px) saturate(1.2);
+}
+
+/* Container */
+.container{
+  max-width:1200px;
+  margin:40px auto;
+  padding:28px;
+  position:relative;
+  z-index:2;
+}
+
+/* Header / Hero */
+.header{
+  display:flex; align-items:center; gap:18px;
+  justify-content:space-between;
+  padding:18px; border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid var(--glass-border);
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(8px) saturate(140%);
+}
+.brand{
+  display:flex; gap:14px; align-items:center;
+}
+.logo{
+  width:72px; height:72px; border-radius:12px;
+  background:var(--glass);
+  display:grid; place-items:center;
+  border:1px solid rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.logo img{width:68%; height:68%; object-fit:contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));}
+.title{
+  display:flex; flex-direction:column;
+}
+.title h1{margin:0; font-size:1.15rem; letter-spacing:0.2px;}
+.title p{margin:2px 0 0; color:var(--muted); font-size:0.92rem}
+
+/* CTA cluster */
+.header-actions{display:flex; gap:12px; align-items:center;}
+.btn{
+  border:0; padding:10px 14px; font-weight:600; border-radius:10px; cursor:pointer;
+  background:var(--highlight-grad); color:white; box-shadow: 0 8px 26px rgba(255,45,106,0.12);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn.secondary{
+  background:transparent; border:1px solid rgba(255,255,255,0.06);
+  color:var(--text); backdrop-filter: blur(6px);
+}
+.btn:hover{transform:translateY(-4px)}
+.header-stats{display:flex; gap:14px; align-items:center;}
+.stat{
+  text-align:center; padding:8px 12px; border-radius:10px; background:var(--card-bg);
+  border:1px solid rgba(255,255,255,0.02);
+  min-width:110px;
+}
+
+/* Hero big card */
+.hero{
+  display:grid; grid-template-columns:1fr 420px; gap:22px; margin-top:22px;
+}
+.hero-left{
+  padding:28px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid var(--glass-border); box-shadow:var(--shadow);
+}
+.hero-left h2{margin:0 0 10px 0; font-size:1.6rem}
+.lead{color:var(--muted)}
+.counters{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap}
+.counter{
+  padding:12px; background:linear-gradient(180deg, rgba(255,255,255,0.016), rgba(255,255,255,0.01));
+  border-radius:10px; min-width:120px; text-align:center; border:1px solid rgba(255,255,255,0.02);
+}
+.counter strong{display:block; font-size:1.3rem}
+
+/* hero right summary card */
+.hero-right{
+  padding:20px; border-radius:14px; position:relative; overflow:hidden;
+  background: linear-gradient(135deg, rgba(91,107,255,0.08), rgba(123,77,255,0.04));
+  border:1px solid rgba(255,255,255,0.03);
+}
+
+/* Sections */
+.section{
+  margin-top:28px; padding:22px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007)); border:1px solid rgba(255,255,255,0.02);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.55);
+}
+.section h3{margin:0 0 12px 0}
+.grid{
+  display:grid; gap:16px;
+}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.resp{grid-template-columns:repeat(3,1fr)}
+@media (max-width:920px){ .hero{grid-template-columns:1fr;}.grid.cols-3{grid-template-columns:1fr}.grid.cols-2{grid-template-columns:1fr} }
+
+/* cards */
+.card{
+  padding:16px; border-radius:12px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.02);
+}
+.persona{display:flex; gap:12px; align-items:center}
+.persona .avatar{width:54px; height:54px; border-radius:10px; background:var(--glass); display:grid; place-items:center; font-weight:700; color:var(--text)}
+
+/* tech stack chips */
+.chips{display:flex; gap:8px; flex-wrap:wrap}
+.chip{padding:8px 10px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:999px; border:1px solid rgba(255,255,255,0.03); font-size:0.9rem}
+
+/* priority matrix */
+.matrix{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+.matrix .matrix-item{padding:16px; border-radius:12px; min-height:120px}
+.matrix .must{border-left:6px solid #5ee3a0}
+.matrix .should{border-left:6px solid #ffd66b}
+.matrix .nice{border-left:6px solid #ff8a66}
+
+/* pricing cards */
+.pricing{display:flex; gap:16px; align-items:stretch; flex-wrap:wrap}
+.price-card{
+  flex:1 1 300px; padding:18px; border-radius:14px; position:relative; overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  transition: transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .28s ease;
+}
+.price-card.pop{transform:translateY(-10px); box-shadow: 0 18px 60px rgba(0,0,0,0.6)}
+.badge{position:absolute; right:12px; top:12px; padding:6px 10px; border-radius:999px; font-weight:700; background:var(--accent-grad); color:#042; transform:translateZ(0);}
+
+/* plan table */
+.plan-table{width:100%; border-collapse:collapse}
+.plan-table th, .plan-table td{padding:10px 12px; border-bottom:1px dashed rgba(255,255,255,0.03); text-align:left; font-size:0.95rem}
+
+/* charts */
+.charts{display:grid; grid-template-columns:1fr 420px; gap:18px}
+.canvas-wrap{padding:12px; background:var(--glass-2); border-radius:12px; border:1px solid rgba(255,255,255,0.02); position:relative}
+.tooltip{
+  position:fixed; pointer-events:none; background:rgba(4,8,20,0.9); color:var(--text); padding:8px 10px; border-radius:8px; font-size:0.85rem; transform:translateY(-8px); display:none;
+  z-index:9999;
+}
+
+/* SWOT */
+.swot{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.swot .item{padding:14px; border-radius:10px}
+
+/* footer ribbon */
+.footer-ribbon{
+  margin-top:26px; padding:16px; border-radius:12px; background:linear-gradient(90deg,#ffefc6,#fff1da); color:#2b2b2b;
+  border:2px solid rgba(0,0,0,0.03); font-weight:700; display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+}
+
+/* animations and reveal */
+.reveal{opacity:0; transform:translateY(14px) scale(.995); transition: all .7s cubic-bezier(.2,.9,.3,1)}
+.revealed{opacity:1; transform:translateY(0) scale(1)}
+.fade-in{transition:opacity .8s ease}
+.kv{display:flex; gap:12px; align-items:center}
+.small{font-size:0.87rem; color:var(--muted)}
+.legend{display:flex; gap:8px; align-items:center; font-size:0.86rem}
+.legend .dot{width:12px;height:12px;border-radius:3px}
+
+/* responsive tweaks */
+@media (max-width:640px){
+  .container{margin:14px; padding:16px}
+  .header{flex-direction:column; align-items:flex-start;}
+  .hero-right{order:2}
+  .hero-left{order:1}
+  .charts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<main class="container" role="main" aria-labelledby="main-title">
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <!-- Replace the svg src with your attached logo or base64 in inline img -->
+        <img src="data:image/svg+xml;utf8,
+        %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0'%3E%3Cstop offset='0' stop-color='%235b6bff'/%3E%3Cstop offset='1' stop-color='%237b4dff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='18' fill='url(%23g)'/%3E%3Ctext x='50' y='58' font-size='44' text-anchor='middle' font-family='Arial' fill='white' font-weight='700'%3EQ%3C/text%3E%3C/svg%3E" alt="OneQR logo placeholder">
+      </div>
+      <div class="title">
+        <h1 id="main-title">OneQR — Universal QR Payment Network</h1>
+        <p>Bank-grade, cross-border QR orchestration — native performance & global rails</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="header-stats" aria-hidden="true">
+        <div class="stat" title="Demo rails connected"><div style="font-size:0.85rem">Demo Rails</div><strong id="stat-rails">6</strong></div>
+        <div class="stat" title="Routing latency target"><div style="font-size:0.85rem">Routing SLA</div><strong id="stat-lat">≤300ms</strong></div>
+      </div>
+      <div>
+        <button class="btn" id="preview-btn" aria-label="Preview proposal">Preview</button>
+        <button class="btn secondary" onclick="scrollToSection('pricing')">Pricing</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-left section reveal">
+      <h2 id="hero-heading">One QR. Any Wallet. Global Reach.</h2>
+      <p class="lead">Accept payments from UPI, PayID, Alipay+, WeChat, UnionPay QR, DuitNow and more — with a single, bank-grade QR and native app performance.</p>
+
+      <div class="counters" role="list" aria-label="Key metrics">
+        <div class="counter card">
+          <div class="small">Projected Success Rate</div>
+          <strong id="ctr-success">98%</strong>
+        </div>
+        <div class="counter card">
+          <div class="small">Avg Route Cost</div>
+          <strong id="ctr-cost">mid-market + 18bps</strong>
+        </div>
+        <div class="counter card">
+          <div class="small">KYC Turnaround</div>
+          <strong id="ctr-kyc">≤60s</strong>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button class="btn" onclick="scrollToSection('tech')">See Technical Details</button>
+        <button class="btn secondary" onclick="scrollToSection('estimates')">See Estimates</button>
+      </div>
+
+      <div style="margin-top:18px; color:var(--muted); font-size:0.92rem">
+        <strong>Why this matters:</strong> Reduce reconciliation friction, increase success rates across corridors, and offer merchants a single QR experience that scales globally.
+      </div>
+    </div>
+
+    <aside class="hero-right section reveal" aria-label="Summary card">
+      <h4 style="margin-top:0">Launch Snapshot</h4>
+      <div style="display:flex; gap:12px; align-items:center; margin-top:10px;">
+        <div style="flex:1">
+          <div class="small">Phase 1 Target</div>
+          <strong>AU MVP — PayID + Card QR</strong>
+        </div>
+        <div style="text-align:right">
+          <div class="small">TCO</div>
+          <strong>$51.8K</strong>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="small">Key Risks</div>
+        <ul style="margin:8px 0 0 18px; color:var(--muted)">
+          <li>Partner sandbox delays</li>
+          <li>Regulatory onboarding times</li>
+          <li>FX liquidity for certain corridors</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:16px" class="kv">
+        <div style="flex:1">
+          <div class="small">Availability SLA</div>
+          <strong>99.9%</strong>
+        </div>
+        <div style="flex:1; text-align:right">
+          <div class="small">Peak TPS (launch)</div>
+          <strong>20–50</strong>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Strategy & Overview -->
+  <section class="section reveal" id="strategy" aria-labelledby="strategy-h">
+    <h3 id="strategy-h">Strategy & Overview</h3>
+    <div class="grid cols-3">
+      <div class="card">
+        <h4>Goals & Objectives</h4>
+        <ul>
+          <li>Deliver AU MVP (merchant-only) with PayID/NPP & Card QR.</li>
+          <li>Prove intelligent routing with mid-market + ≤25bps FX execution.</li>
+          <li>Automate KYC/AML, reconciliation and reporting (Xero/MYOB/QB).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Key Needs</h4>
+        <ul>
+          <li>Native mobile apps for bank-grade camera & biometrics.</li>
+          <li>Partner coordination for sandbox and certification.</li>
+          <li>High-availability routing engine with auditing.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Market Trends</h4>
+        <p class="small">QR payments are accelerating globally — wallets + UPI-style rails dominate Asia; merchants prefer a single interoperable acceptance method.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Target Audience -->
+  <section class="section reveal" id="audience" aria-labelledby="aud-h">
+    <h3 id="aud-h">Target Audience & Personas</h3>
+      <div class="grid cols-3">
+        <div class="card persona">
+          <div class="avatar">R</div>
+          <div>
+            <strong>Retail Merchant</strong><div class="small">SMB retail, POS-driven, high footfall</div>
+            <div class="small">Needs: reliable settlement, quick onboarding</div>
+          </div>
+        </div>
+        <div class="card persona">
+          <div class="avatar">R</div>
+          <div>
+            <strong>F&B Chains</strong><div class="small">Quick transactions, high peak TPS</div>
+            <div class="small">Needs: fast routing, offline QR fallback</div>
+          </div>
+        </div>
+        <div class="card persona">
+          <div class="avatar">E</div>
+          <div>
+            <strong>Enterprise Partners</strong><div class="small">High-volume, multi-currency</div>
+            <div class="small">Needs: FX hedging, sub-ledgers</div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- Technical Details -->
+  <section class="section reveal" id="tech" aria-labelledby="tech-h">
+    <h3 id="tech-h">Technical Details & Architecture</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <h4>Stack & Integrations</h4>
+        <div class="chips" aria-hidden="true">
+          <div class="chip">Native iOS (Swift)</div>
+          <div class="chip">Native Android (Kotlin)</div>
+          <div class="chip">Node.js (Routing Edge)</div>
+          <div class="chip">Java/Kotlin (Ledger & Compliance)</div>
+          <div class="chip">Postgres (Ledger)</div>
+          <div class="chip">Redis (Feature cache)</div>
+          <div class="chip">Kafka (Event Bus)</div>
+          <div class="chip">Xero / MYOB / QuickBooks APIs</div>
+        </div>
+        <p class="small" style="margin-top:10px">Hybrid: Node.js at the edge for non-blocking I/O + Java/Kotlin for transactional core. HSM/KMS for signing and key management.</p>
+      </div>
+
+      <div class="card" id="arch-svg">
+        <h4>Architecture (High-level)</h4>
+        <!-- Simple SVG architecture -->
+        <svg viewBox="0 0 700 300" width="100%" height="220" role="img" aria-label="Architecture diagram">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#5b6bff"/><stop offset="1" stop-color="#7b4dff"/></linearGradient>
+            <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#c5f06a"/><stop offset="1" stop-color="#8fe34b"/></linearGradient>
+          </defs>
+          <rect x="6" y="6" width="688" height="288" rx="12" fill="rgba(255,255,255,0.02)"></rect>
+
+          <!-- Mobile -->
+          <rect x="18" y="30" width="150" height="70" rx="8" fill="url(#g1)" opacity="0.14"></rect>
+          <text x="28" y="52" fill="#dfe6ff" font-size="13">Merchant App</text>
+          <text x="28" y="68" fill="#bfc9ff" font-size="11">Swift / Kotlin</text>
+
+          <!-- API Gateway -->
+          <rect x="220" y="22" width="180" height="46" rx="8" fill="rgba(255,255,255,0.02)"></rect>
+          <text x="230" y="50" fill="#e6eaff" font-size="12">API Gateway / Edge (Node.js)</text>
+
+          <!-- Routing -->
+          <rect x="220" y="82" width="180" height="75" rx="8" fill="rgba(255,255,255,0.01)"></rect>
+          <text x="230" y="105" fill="#dfe6ff" font-size="12">Smart Routing (Node.js)</text>
+          <text x="230" y="122" fill="#bfc9ff" font-size="11">Rules + ML-ready inferencing</text>
+
+          <!-- Core -->
+          <rect x="440" y="40" width="210" height="120" rx="8" fill="rgba(255,255,255,0.02)"></rect>
+          <text x="455" y="64" fill="#e6eaff" font-size="12">Ledger & Settlement (Java/Kotlin)</text>
+          <text x="455" y="82" fill="#bfc9ff" font-size="11">Postgres, HSM, Compliance</text>
+
+          <!-- Rails -->
+          <rect x="18" y="130" width="150" height="80" rx="8" fill="rgba(255,255,255,0.01)"></rect>
+          <text x="28" y="154" fill="#dfe6ff" font-size="12">Partner Rails & PSPs</text>
+          <text x="28" y="172" fill="#bfc9ff" font-size="11">UPI, Alipay, WeChat, PayID, Card</text>
+
+          <!-- Arrows -->
+          <path d="M170 65 L220 45" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"></path>
+          <path d="M400 105 L440 100" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"></path>
+          <path d="M95 110 L95 130 L40 130" stroke="rgba(255,255,255,0.06)" stroke-width="2" fill="none" stroke-dasharray="4"></path>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Priority -->
+  <section class="section reveal" id="features" aria-labelledby="feat-h">
+    <h3 id="feat-h">Feature Priority Matrix</h3>
+    <div class="matrix">
+      <div class="matrix-item must card">
+        <h4>Must-have</h4>
+        <ul>
+          <li>Universal OneQR (static & dynamic)</li>
+          <li>Native high-FPS QR scanning</li>
+          <li>Merchant onboarding + KYC (ABN + biometrics)</li>
+          <li>Webhook delivery with retries</li>
+        </ul>
+      </div>
+      <div class="matrix-item should card">
+        <h4>Should-have</h4>
+        <ul>
+          <li>Smart routing engine (rules + ML-ready)</li>
+          <li>Nightly reconciliation to Xero/MYOB/QB</li>
+          <li>Multi-currency ledger</li>
+        </ul>
+      </div>
+      <div class="matrix-item nice card">
+        <h4>Nice-to-have</h4>
+        <ul>
+          <li>Consumer wallet app (Phase 2)</li>
+          <li>Advanced FX hedging</li>
+          <li>Behavioral biometrics</li>
+        </ul>
+      </div>
+      <div class="matrix-item card">
+        <h4>Implementation Notes</h4>
+        <p class="small">Hybrid backend: Node.js at the edge (routing) + Java/Kotlin for transactional core. Native apps for camera & biometric compliance. Manual override rules for rails.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Plans -->
+  <section class="section reveal" id="pricing" aria-labelledby="pricing-h">
+    <h3 id="pricing-h">Pricing Plans — Choose Your Path</h3>
+
+    <div class="pricing" role="list" aria-label="Pricing plans">
+      <!-- Basic -->
+      <article class="price-card card reveal" tabindex="0" role="listitem" aria-label="Basic Plan">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="margin:0">Basic</h4>
+            <div class="small">MVP launch — App Store ready</div>
+          </div>
+          <div class="badge" style="background:linear-gradient(90deg,#ffd66b,#9cf14b); color:#072;">Best for fast launch</div>
+        </div>
+        <hr style="border:none; height:1px; background:rgba(255,255,255,0.02); margin:12px 0;">
+        <ul>
+          <li>Native Mobile App (basic scan & dashboard)</li>
+          <li>Basic KYC (form + doc upload)</li>
+          <li>Simple backend, single currency</li>
+          <li>App store compliance & 1-week support</li>
+        </ul>
+        <div style="margin-top:12px; font-weight:700; font-size:1.03rem">$18,900</div>
+      </article>
+
+      <!-- Standard -->
+      <article class="price-card card reveal" tabindex="0" role="listitem" aria-label="Standard Plan">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="margin:0">Standard</h4>
+            <div class="small">Core product with admin dashboard</div>
+          </div>
+          <div class="badge" style="background:linear-gradient(90deg,#7b4dff,#5b6bff); color:white;">Recommended</div>
+        </div>
+        <hr style="border:none; height:1px; background:rgba(255,255,255,0.02); margin:12px 0;">
+        <ul>
+          <li>Native mobile app (optimized scan)</li>
+          <li>Document KYC + liveness</li>
+          <li>Admin dashboard + basic routing rules</li>
+          <li>Reconciliation to Xero/MYOB (nightly)</li>
+        </ul>
+        <div style="margin-top:12px; font-weight:700; font-size:1.03rem">$32,500</div>
+      </article>
+
+      <!-- Premium -->
+      <article class="price-card pop card reveal" tabindex="0" role="listitem" aria-label="Premium Plan">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="margin:0">Premium</h4>
+            <div class="small">Full bank-grade platform — global launch</div>
+          </div>
+          <div class="badge" style="background:linear-gradient(90deg,#ff6a3d,#ff2d6a); color:white;">Full stack</div>
+        </div>
+        <hr style="border:none; height:1px; background:rgba(255,255,255,0.02); margin:12px 0;">
+        <ul>
+          <li>Native Swift/Kotlin apps (60–120 FPS)</li>
+          <li>Biometric KYC, MRZ, liveness, risk tiers</li>
+          <li>Smart routing (<300ms), FX prioritization</li>
+          <li>Multi-currency ledger, webhooks DLQ + replay</li>
+          <li>Brand, website, admin, QA, deployment & 4w support</li>
+        </ul>
+        <div style="margin-top:12px; font-weight:700; font-size:1.03rem">$51,800</div>
+      </article>
+    </div>
+
+    <!-- pricing feature comparison -->
+    <div style="margin-top:18px" class="card reveal">
+      <h4>Feature Comparison</h4>
+      <table class="plan-table" role="table" aria-label="Feature comparison table">
+        <thead>
+          <tr><th>Feature</th><th>Basic</th><th>Standard</th><th>Premium</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Native apps</td><td>✓</td><td>✓</td><td>✓ (native performance)</td></tr>
+          <tr><td>High-FPS scanning</td><td>—</td><td>Optimized</td><td>✓ (60–120 FPS)</td></tr>
+          <tr><td>Biometric KYC</td><td>Basic</td><td>Advanced</td><td>✓ Full biometric + MRZ</td></tr>
+          <tr><td>Smart routing</td><td>—</td><td>Rule-based</td><td>✓ AI + rules</td></tr>
+          <tr><td>Multi-currency ledger</td><td>—</td><td>Partial</td><td>✓ Full</td></tr>
+          <tr><td>Webhooks DLQ + Replay</td><td>—</td><td>Basic</td><td>✓ Advanced</td></tr>
+          <tr><td>Brand & Website</td><td>—</td><td>—</td><td>✓ Included</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Estimations & Financials -->
+  <section class="section reveal" id="estimates" aria-labelledby="est-h">
+    <h3 id="est-h">Estimations & Financials</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <h4>Cost & Hours Breakdown (Premium)</h4>
+        <table class="plan-table" aria-label="Hours and cost">
+          <thead><tr><th>Task</th><th>Hrs</th><th>Rate</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Requirements & Architecture</td><td>30</td><td>$40</td><td>$1,200</td></tr>
+            <tr><td>Design (Brand + UI/UX)</td><td>125</td><td>$40</td><td>$5,000</td></tr>
+            <tr><td>Mobile (Swift/Kotlin)</td><td>220</td><td>$40</td><td>$8,800</td></tr>
+            <tr><td>Frontend Web & Admin</td><td>280</td><td>$40</td><td>$11,200</td></tr>
+            <tr><td>Backend & Routing</td><td>440</td><td>$40</td><td>$17,600</td></tr>
+            <tr><td>QA & Testing</td><td>80</td><td>$40</td><td>$3,200</td></tr>
+            <tr><td>Deployment & Support</td><td>70</td><td>$40</td><td>$2,800</td></tr>
+            <tr><td><strong>Total</strong></td><td><strong>1,245</strong></td><td></td><td><strong>$51,800</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h4>Projected KPIs & ROI (12 months)</h4>
+        <ul>
+          <li>Conversion uplift (frictionless QR): <strong>+15–25%</strong></li>
+          <li>Average transaction fee savings vs incumbents: <strong>~12–22%</strong></li>
+          <li>Projected merchant retention: <strong>65–78%</strong></li>
+          <li>Estimated monthly revenue (100 merchants avg $2k tx/mo @ 1% net): <strong>$2,000</strong> per merchant → $200K for 100 merchants</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts" style="margin-top:14px;">
+      <div class="canvas-wrap" id="chart-area">
+        <h4 style="margin-top:0">Cost Breakdown (Stacked)</h4>
+        <canvas id="stacked-chart" width="600" height="320" style="width:100%; height:220px"></canvas>
+      </div>
+      <div class="canvas-wrap">
+        <h4 style="margin-top:0">Projected Revenue Growth (Interactive)</h4>
+        <canvas id="line-chart" width="420" height="220" style="width:100%; height:220px"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Competitive snapshot -->
+  <section class="section reveal" id="competitor" aria-labelledby="comp-h">
+    <h3 id="comp-h">Competitor Snapshot</h3>
+    <div class="card">
+      <table class="plan-table" aria-label="competitor matrix">
+        <thead><tr><th>Competitor</th><th>Coverage</th><th>Strength</th><th>Weakness</th></tr></thead>
+        <tbody>
+          <tr><td>Large Acquirer A</td><td>Card QR (Global)</td><td>Scale</td><td>Costly, limited wallet rails</td></tr>
+          <tr><td>Wallet Provider B</td><td>WeChat / Alipay</td><td>Local penetration</td><td>Closed ecosystem</td></tr>
+          <tr><td>Regional PSP C</td><td>UPI / DuitNow</td><td>Local integration</td><td>Onboarding delays</td></tr>
+          <tr><td>OneQR (you)</td><td>Universal QR across rails</td><td>Interoperability + routing</td><td>Initial partner onboarding effort</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SWOT -->
+  <section class="section reveal" id="swot" aria-labelledby="swot-h">
+    <h3 id="swot-h">SWOT Summary</h3>
+    <div class="swot">
+      <div class="item card" style="border-left:6px solid #5ee3a0"><strong>Strengths</strong><ul class="small"><li>Universal QR</li><li>Native performance</li></ul></div>
+      <div class="item card" style="border-left:6px solid #ffd66b"><strong>Weaknesses</strong><ul class="small"><li>Partner onboarding time</li><li>Initial cost</li></ul></div>
+      <div class="item card" style="border-left:6px solid #7b4dff"><strong>Opportunities</strong><ul class="small"><li>Strategic corridors (India, China)</li><li>Embedded merchant services</li></ul></div>
+      <div class="item card" style="border-left:6px solid #ff6a3d"><strong>Threats</strong><ul class="small"><li>Regulatory changes</li><li>Local incumbent discounts</li></ul></div>
+    </div>
+  </section>
+
+  <!-- Support & Next Steps -->
+  <section class="section reveal" id="next" aria-labelledby="next-h">
+    <h3 id="next-h">Support & Next Steps</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <h4>Immediate Next Steps</h4>
+        <ol>
+          <li>Confirm Requirements Confirmation Document</li>
+          <li>Approve SOW & Phase 1 kickoff</li>
+          <li>Begin sponsor bank & vendor onboarding</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h4>Support Options</h4>
+        <p class="small">We provide 4-week post-launch support in Premium; 2-week in Standard; 1-week in Basic. SLA upgrades and retained engineering are available.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conclusion CTA -->
+  <section class="section reveal" id="conclude" aria-labelledby="conclude-h">
+    <h3 id="conclude-h">Conclusion</h3>
+    <p>OneQR unifies fragmented QR payment ecosystems with native performance, bank-grade security and a routing backbone designed for global scale. The Premium plan provides the full product stack, compliance & performance needed for a production global launch.</p>
+    <div style="display:flex; gap:12px; margin-top:12px;">
+      <button class="btn" onclick="scrollToSection('estimates')">Approve Requirements</button>
+      <button class="btn secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
+    </div>
+  </section>
+
+  <!-- Footer Ribbon (Freelancer compliance note) -->
+  <aside class="footer-ribbon" role="note">
+    ⚠️ <strong style="margin-left:8px">All project communication and payments will be handled exclusively through Freelancer in accordance with Freelancer policies.</strong>
+  </aside>
+
+  <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+</main>
+
+<!-- ========== JS (self-contained charts, interactions, animations) ========== -->
+<script>
+/* ===== Utility: smooth scroll ===== */
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ===== Simple reveal on scroll ===== */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('revealed');
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(n=>observer.observe(n));
+
+/* ===== Counters animate (demo values) ===== */
+function animateCount(id, start, end, dur){
+  const el = document.getElementById(id);
+  if(!el) return;
+  let startTime = null;
+  function step(ts){
+    if(!startTime) startTime = ts;
+    const progress = Math.min((ts - startTime)/dur,1);
+    const val = start + Math.floor(progress * (end - start));
+    el.textContent = typeof end === 'number' ? val + (id==='ctr-success' ? '%' : '') : end;
+    if(progress<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+animateCount('ctr-success', 90, 98, 1400);
+animateCount('ctr-cost',0,0,100); // static text
+animateCount('ctr-kyc', 120, 60, 900);
+
+/* ===== Pricing card hover/pop selection ===== */
+document.querySelectorAll('.price-card').forEach(c=>{
+  c.addEventListener('mouseenter',()=>{ c.classList.add('pop');});
+  c.addEventListener('mouseleave',()=>{ c.classList.remove('pop');});
+  c.addEventListener('focus',()=>{ c.classList.add('pop');});
+  c.addEventListener('blur',()=>{ c.classList.remove('pop');});
+});
+
+/* ===== Tooltip ===== */
+const tooltip = document.getElementById('tooltip');
+document.addEventListener('mousemove', (e)=>{ tooltip.style.left = (e.clientX+14)+'px'; tooltip.style.top = (e.clientY-8)+'px' });
+
+/* ===== Charts: simple lightweight drawing (no libs) ===== */
+function drawStacked(){
+  const canvas = document.getElementById('stacked-chart');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * DPR;
+  canvas.height = canvas.clientHeight * DPR;
+  ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight);
+
+  // Data (Premium cost breakdown)
+  const labels = ['Design','Mobile','Frontend','Backend','QA','Deploy'];
+  const values = [5000,8800,11200,17600,3200,2800];
+  const colors = ['#7b4dff','#8fe34b','#ff6a3d','#5b6bff','#ffd66b','#ff2d6a'];
+  const total = values.reduce((a,b)=>a+b,0);
+  const width = canvas.clientWidth - 40;
+  const barX = 20, barY = 40, barH = 28;
+
+  // Draw stacked bar
+  let cursor = barX;
+  for(let i=0;i<values.length;i++){
+    const w = (values[i]/total)*width;
+    ctx.fillStyle = colors[i];
+    roundRect(ctx, cursor, barY, w, barH, 8);
+    cursor += w;
+  }
+  // labels
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = '13px '+getComputedStyle(document.documentElement).getPropertyValue('--sans');
+  ctx.fillText('Cost Breakdown (stacked) — Total: $'+total.toLocaleString(), barX, barY - 12);
+
+  // legend interactive
+  const legendY = barY + barH + 20;
+  let lx = barX;
+  for(let i=0;i<labels.length;i++){
+    ctx.fillStyle = colors[i];
+    roundRect(ctx, lx, legendY, 14,14,4);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillText(' '+labels[i]+' $'+values[i].toLocaleString(), lx+20, legendY+12);
+    lx += ctx.measureText(' '+labels[i]+' $'+values[i].toLocaleString()).width + 52;
+  }
+
+  // hover detection
+  canvas.onmousemove = (ev)=>{
+    const r = canvas.getBoundingClientRect();
+    const x = (ev.clientX - r.left);
+    // find which segment
+    let cur = barX;
+    for(let i=0;i<values.length;i++){
+      const w = (values[i]/total)*width;
+      if(x>=cur && x<=cur+w){
+        showTooltip(labels[i] + ': $' + values[i].toLocaleString());
+        return;
+      }
+      cur += w;
+    }
+    hideTooltip();
+  };
+  canvas.onmouseleave = hideTooltip;
+}
+
+function drawLine(){
+  const canvas = document.getElementById('line-chart');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * DPR;
+  canvas.height = canvas.clientHeight * DPR;
+  ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight);
+
+  // mock revenue data (months)
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const data = [5,12,25,40,60,85,120,165,210,265,310,380]; // k$
+  const max = Math.max(...data);
+  const padding = 28;
+  const w = canvas.clientWidth - padding*2;
+  const h = canvas.clientHeight - padding*2;
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padding, padding + h);
+  ctx.lineTo(padding + w, padding + h);
+  ctx.stroke();
+
+  // draw line
+  ctx.beginPath();
+  for(let i=0;i<data.length;i++){
+    const x = padding + (i/(data.length-1))*w;
+    const y = padding + h - (data[i]/max)*h;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle = '#9cf14b';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // points and hover
+  for(let i=0;i<data.length;i++){
+    const x = padding + (i/(data.length-1))*w;
+    const y = padding + h - (data[i]/max)*h;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    // store clickable region
+  }
+  canvas.onmousemove = (ev)=>{
+    const r = canvas.getBoundingClientRect();
+    const x = ev.clientX - r.left;
+    const y = ev.clientY - r.top;
+    // find nearest point
+    let nearest = null, dist=Infinity, idx=-1;
+    for(let i=0;i<data.length;i++){
+      const px = padding + (i/(data.length-1))*w;
+      const py = padding + h - (data[i]/max)*h;
+      const d = Math.hypot(px-x,py-y);
+      if(d<dist){ dist=d; nearest=[px,py]; idx=i; }
+    }
+    if(dist<18){
+      showTooltip(months[idx]+': $'+data[idx]+'k');
+    } else hideTooltip();
+  };
+  canvas.onmouseleave=hideTooltip;
+}
+
+/* ===== Tooltip helpers ===== */
+function showTooltip(text){
+  tooltip.style.display='block'; tooltip.textContent=text;
+}
+function hideTooltip(){ tooltip.style.display='none'; tooltip.textContent=''; }
+
+/* ===== Rounded rect helper ===== */
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/* init charts on load and on resize */
+function initCharts(){ drawStacked(); drawLine(); }
+window.addEventListener('load', initCharts);
+window.addEventListener('resize', ()=>{
+  clearTimeout(window.__chartResize); window.__chartResize=setTimeout(initCharts,220);
+});
+
+/* ===== Accessibility: keyboard nav for price cards ===== */
+document.querySelectorAll('.price-card').forEach(pc=>{
+  pc.setAttribute('tabindex',0);
+});
+
+/* ===== Preview button: subtle animation to demonstrate microinteraction ===== */
+document.getElementById('preview-btn').addEventListener('click',(e)=>{
+  const el = document.querySelector('.hero-left');
+  el.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:450, easing:'ease-out'});
+  scrollToSection('conclude');
+});
+
+</script>
+</body>
+</html>
